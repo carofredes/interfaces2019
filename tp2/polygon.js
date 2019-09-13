@@ -8,6 +8,8 @@ class Polygon {
     this.points = [];
     this.pointsLength = 0;
     this.centroID = {};
+    this.draggingFromPoint = null;
+    this.draggingFromCenter = false;
   }
 
   getAmountPoints() {
@@ -75,8 +77,15 @@ class Polygon {
     }
   }
 
-  reDrawPoint() {
-
+  reDrawPoint(ctx, newClickedPoint) {
+    let changedPoint = this.points[this.draggingFromPoint.index];
+    const diffCenterX = changedPoint.x - newClickedPoint.x;
+    const diffCenterY = changedPoint.y - newClickedPoint.y;
+     
+    changedPoint.x = changedPoint.x - diffCenterX;
+    changedPoint.y = changedPoint.y - diffCenterY;
+    this.points[this.draggingFromPoint.index] = changedPoint;
+    this.reDraw(ctx);
   }
 
   closePolygon(ctx) {
@@ -85,44 +94,61 @@ class Polygon {
     this.drawCircle(ctx, polygonCenter, GREEN, 3.5);
   }
 
-  isMouseInsidePoint(pointToCompare) {
+  pointBelongsToPolygon(pointToCompare) {
     // Check with center
-    const distanceX = this.centroID.x - pointToCompare.x;
-    const distanceY = this.centroID.y - pointToCompare.y;
-    //return true if x^2 + y^2 <= radius squared.
-    const isInsideCenter = distanceX * distanceX + distanceY * distanceY <= 3.5 * 3.5
+    const isInsideCenter = this.isMouseInsidePoint(this.centroID, pointToCompare, 3.5);
+
     if (isInsideCenter){
+      this.draggingFromCenter = true;
       return true;
     }
 
     // Check with other points
-    for (let i=0; i<this.pointsLength; ++i){
-      const actualPoint = this.points[i];
-      const distanceX = actualPoint.x - pointToCompare.x;
-      const distanceY = actualPoint.y - pointToCompare.y;
-      //return true if x^2 + y^2 <= radius squared.
-      return (
-        distanceX * distanceX + distanceY * distanceY <= 5 * 5
-      );
+    for (let i=0; i<this.pointsLength; ++i) {
+      let isSamePoint = this.isMouseInsidePoint(this.points[i], pointToCompare, 5);
+      if (isSamePoint) {
+        this.draggingFromPoint = {
+          "isMoving": true,
+          "index": i
+        };
+        return true;
+      }
     }
+
     return false;
   }
 
-  reDrawPolygon(ctx, diffCenterX, diffCenterY) {
-    //console.log("x", diffCenterX, "y", diffCenterY)
-    let newPoints = [];
-    for (let index = 0; index < this.pointsLength; index++) {
-      let point = this.points[index];
-      point.x = point.x - diffCenterX;
-      point.y = point.y - diffCenterY;
-    
-      newPoints.push(point)
-      this.drawCircle(ctx, point, RED, 5);
-    }
-    this.points = newPoints;
+  isMouseInsidePoint(actualPoint, pointToCompare, radius) {
+    const distanceX = actualPoint.x - pointToCompare.x;
+    const distanceY = actualPoint.y - pointToCompare.y;
+    //return true if x^2 + y^2 <= radius squared.
+    return (
+      distanceX * distanceX + distanceY * distanceY <= radius * radius
+    );
+  }
 
-    this.drawLines(ctx);
-    this.closePolygon(ctx);
+  reDrawPolygon(ctx, newClickedPoint) {
+    //console.log("x", diffCenterX, "y", diffCenterY)
+    if (this.draggingFromPoint) {
+      this.reDrawPoint(ctx, newClickedPoint)
+    }
+    else if (this.draggingFromCenter) {
+      const diffCenterX = this.centroID.x - newClickedPoint.x;
+      const diffCenterY = this.centroID.y - newClickedPoint.y;
+      let newPoints = [];
+      for (let index = 0; index < this.pointsLength; index++) {
+        let point = this.points[index];
+        point.x = point.x - diffCenterX;
+        point.y = point.y - diffCenterY;
+      
+        newPoints.push(point)
+        this.drawCircle(ctx, point, RED, 5);
+      }
+      this.points = newPoints;
+  
+      this.drawLines(ctx);
+      this.closePolygon(ctx);
+    }
   }
 
   addPoint(newPoint, ctx) {
@@ -138,6 +164,11 @@ class Polygon {
       const previousPoint = this.points[this.pointsLength - 2];
       this.drawLine(ctx, previousPoint, newPoint);
     }
+  }
+
+  stopDragging() {
+    this.draggingFromPoint = null;
+    this.draggingFromCenter = false;
   }
 
   reDraw(ctx) {

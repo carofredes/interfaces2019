@@ -25,7 +25,6 @@ function handleClick(event) {
   const point = getMousePosition(event);
   // If there is an "open" polygon, add the new point
   if (newPolygon) {
-    console.log("Newpoly")
     newPolygon.addPoint(point, ctx);
 
     if (newPolygon.getAmountPoints() > 1) {
@@ -35,18 +34,13 @@ function handleClick(event) {
   else {
     // IF the clicked point belongs to any polygons, redraw
     for (let pol=0; pol < polygons.length; pol++) {
-      console.log("for", polygons[pol])
-
-      if (polygons[pol].isMouseInsidePoint(point)){
-        console.log("isMouseInsidePoint")
-
+      if (polygons[pol].pointBelongsToPolygon(point)){
         isDragging = true;
         canvas.addEventListener('mousemove', movePolygon);
         newPolygon = polygons[pol];
         return;
       }
     }
-    console.log("new oneee")
 
     // Else, create new polygon
     newPolygon = new Polygon();
@@ -75,19 +69,17 @@ function reDrawAll() {
 
 function movePolygon(event) {
   if (isDragging) {
-    const newCenterPoint = getMousePosition(event);
-    const diffCenterX = newPolygon.getCenter().x - newCenterPoint.x;
-    const diffCenterY = newPolygon.getCenter().y - newCenterPoint.y;
-    //console.log("polygonCenter",polygonCenter,"pol")
+    const newClickedPoint = getMousePosition(event);
 
     ctx.clearRect(0, 0, 1000, 1000);
-    newPolygon.reDrawPolygon(ctx, diffCenterX, diffCenterY);
+    newPolygon.reDrawPolygon(ctx, newClickedPoint);
     reDrawAll();
   }
 }
 
 function stopMovePolygon() {
   if (isDragging) {
+    newPolygon.stopDragging();
     newPolygon = null;
   }
   isDragging = false;
