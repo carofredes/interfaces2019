@@ -4,13 +4,17 @@ const ctx = canvas.getContext('2d');
 const closeButton = document.getElementById('closeButton');
 let newPolygon = new Polygon();
 let polygons = [];
-
+let cKeyPressed = false; 
 let isDragging = false;
+let bright = 48;
 // Add listeners
 closeButton.addEventListener('click', closePolygon);
 canvas.addEventListener('mouseup', stopMovePolygon);
 canvas.addEventListener('mousedown', handleClick);
 canvas.addEventListener('dblclick', removePoint);
+window.addEventListener('keydown', checkIfPressed);
+window.addEventListener('keyup', checkIfReleased);
+canvas.addEventListener('mousewheel', handleMouseWheel);
 
 function getMousePosition(event) {
   const offset = canvas.getBoundingClientRect();
@@ -51,7 +55,6 @@ function handleClick(event) {
 function showCloseButton() {
   closeButton.className = "show";
 };
-
 
 function closePolygon() {
   newPolygon.closePolygon(ctx);
@@ -95,5 +98,36 @@ function removePoint(event) {
       reDrawAll();
       return;
     }
+  }
+}
+
+function checkIfPressed(event) {
+  if (event.key == "c") {
+    cKeyPressed = true;
+  }
+}
+
+function checkIfReleased(event) {
+  if (event.key == "c") {
+    cKeyPressed = false;
+  }
+}
+
+function handleMouseWheel(event) {
+  if (cKeyPressed) {
+    const deltaY = event.deltaY;
+    if (deltaY === 1) {
+      bright++;
+    } else if (deltaY === -1){
+      bright--;
+    }
+    for (let pol=0; pol < polygons.length; pol++) {
+      const newRed = 'hsl(50,96%,' + bright + '%)';
+      const newYellow = 'hsl(0,86%,' + bright + '%)';
+      const newGreen = 'hsl(123,90%,' + bright + '%)';
+      polygons[pol].setColors(newYellow, newRed, newGreen);
+    }
+    ctx.clearRect(0, 0, 1000, 1000);
+    reDrawAll();
   }
 }

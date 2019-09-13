@@ -1,8 +1,3 @@
-// Constants
-const RED = '#d61010';
-const YELLOW = '#F2CB05';
-const GREEN = '#0bd015';
-
 class Polygon {
   constructor() {
     this.points = [];
@@ -11,6 +6,15 @@ class Polygon {
     this.draggingFromPoint = null;
     this.draggingFromCenter = false;
     this.indexToRemove = null;
+    this.lineColor = 'hsl(50,96%,48%)'; //Yellow
+    this.pointColor = 'hsl(0,86%,48%)'; //Red
+    this.centerColor = 'hsl(123,90%,48%)'; //Green
+  }
+
+  setColors(newLineC, newPointC, newCenterC) {
+    this.lineColor = newLineC;
+    this.pointColor = newPointC;
+    this.centerColor = newCenterC;
   }
 
   getAmountPoints() {
@@ -59,7 +63,7 @@ class Polygon {
     ctx.moveTo(previous.x, previous.y);
     ctx.lineTo(destination.x, destination.y);
     ctx.lineWidth = 2;
-    ctx.strokeStyle = YELLOW;
+    ctx.strokeStyle = this.lineColor;
     ctx.stroke();
   };
 
@@ -92,7 +96,7 @@ class Polygon {
   closePolygon(ctx) {
     this.drawLine(ctx, this.points[this.pointsLength-1], this.points[0]);
     const polygonCenter = this.calculateCenter();
-    this.drawCircle(ctx, polygonCenter, GREEN, 3.5);
+    this.drawCircle(ctx, polygonCenter, this.centerColor, 3.5);
   }
 
   pointBelongsToPolygon(pointToCompare) {
@@ -140,7 +144,6 @@ class Polygon {
   }
 
   reDrawPolygon(ctx, newClickedPoint) {
-    //console.log("x", diffCenterX, "y", diffCenterY)
     if (this.draggingFromPoint) {
       this.reDrawPoint(ctx, newClickedPoint)
     }
@@ -154,7 +157,7 @@ class Polygon {
         point.y = point.y - diffCenterY;
       
         newPoints.push(point)
-        this.drawCircle(ctx, point, RED, 5);
+        this.drawCircle(ctx, point, this.pointColor, 5);
       }
       this.points = newPoints;
   
@@ -169,7 +172,7 @@ class Polygon {
     console.log("Detected a clik on canvas");
     console.log("X: ", newPoint.x, " Y: ", newPoint.y);
   
-    this.drawCircle(ctx, newPoint, RED, 5);
+    this.drawCircle(ctx, newPoint, this.pointColor, 5);
   
     // If there are more than one point, it will draw a line between the last 2 added.
     if (this.pointsLength - 1 > 0) {
@@ -185,7 +188,7 @@ class Polygon {
 
   reDraw(ctx) {
     for (let index = 0; index < this.pointsLength; index++) {
-      this.drawCircle(ctx, this.points[index], RED, 5);
+      this.drawCircle(ctx, this.points[index], this.pointColor, 5);
       if (index - 1 >= 0) {
         const previousPoint = this.points[index - 1];
         this.drawLine(ctx, previousPoint, this.points[index]);
@@ -193,7 +196,7 @@ class Polygon {
     }
     this.closePolygon(ctx);
 
-    this.drawCircle(ctx, this.centroID, GREEN, 3.5);
+    this.drawCircle(ctx, this.centroID, this.centerColor, 3.5);
   }
 
   deletePoint() {
