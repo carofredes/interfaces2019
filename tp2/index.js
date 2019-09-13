@@ -1,127 +1,16 @@
-// Constants
-const RED = '#d61010';
-const YELLOW = '#F2CB05';
-const GREEN = '#0bd015';
-
 // Initialization
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const closeButton = document.getElementById('closeButton');
-let points = [];
-let polygonCenter = null;
-let dragok = false;
+let newPolygon = new Polygon();
+let polygons = [];
+
+let isDragging = false;
 // Add listeners
-//canvas.addEventListener('click', handleClick);
 closeButton.addEventListener('click', closePolygon);
-canvas.addEventListener('mouseup', myUp);
+canvas.addEventListener('mouseup', stopMovePolygon);
 canvas.addEventListener('mousedown', handleClick);
 
-function drawCircle(location, color, radius) {
-  ctx.beginPath();
-  ctx.arc(location.x, location.y, radius, 0, 2 * Math.PI, false);
-  ctx.fillStyle = color;
-  ctx.fill();
-};
-
-function drawLine(previous, destination) {
-  ctx.beginPath();
-  ctx.moveTo(previous.x, previous.y);
-  ctx.lineTo(destination.x, destination.y);
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = YELLOW;
-  ctx.stroke();
-};
-
-function showCloseButton() {
-  closeButton.className = "show";
-};
-
-function isMouseInsidePoint(coordinates) {
-  const distanceX = coordinates.x - polygonCenter.x;
-  const distanceY = coordinates.y - polygonCenter.y;
-  //return true if x^2 + y^2 <= radius squared.
-  return (
-    distanceX * distanceX + distanceY * distanceY <= 3.5 * 3.5
-  );
-};
-
-// Use the polygon calculation from wikipedia
-// https://en.wikipedia.org/wiki/Centroid#Centroid_of_a_polygon
-function calculateCenter() {
-  let signedArea = 0;
-  let centroid = {
-    x: 0,
-    y: 0
-  };
-
-  // For all vertices except last
-  for (let i=0; i<points.length; ++i){
-    const point0 = {
-      x: points[i].x,
-      y: points[i].y
-    } 
-    const point1 = {
-      x: points[(i+1) % points.length].x,
-      y: points[(i+1) % points.length].y
-    }
-    let a = point0.x*point1.y - point1.x*point0.y;
-    signedArea += a;
-    centroid.x += (point0.x + point1.x)*a;
-    centroid.y += (point0.y + point1.y)*a;
-  }
-
-  signedArea *= 0.5;
-  centroid.x /= (6.0*signedArea);
-  centroid.y /= (6.0*signedArea);
-  polygonCenter = centroid;
-  return centroid;
-};
-
-function closePolygon() {
-  drawLine(points[points.length-1], points[0]);
-  const polygonCenter = calculateCenter();
-  drawCircle(polygonCenter, GREEN, 3.5);
-  console.log("points", points)
-}
-
-function movePolygon(event) {
-  //console.log("ev my move")
-  if (dragok) {
-    const newCenterPoint = getMousePosition(event);
-    const diffCenterX = polygonCenter.x - newCenterPoint.x;
-    const diffCenterY = polygonCenter.y - newCenterPoint.y;
-    //console.log("polygonCenter",polygonCenter,"pol")
-
-    ctx.clearRect(0, 0, 1000, 1000);
-    reDrawPolygon(diffCenterX, diffCenterY);
-  }
-}
-
-function myUp() {
-  dragok = false;
-  canvas.onmousemove = null;
-}
-
-function reDrawPolygon(diffCenterX, diffCenterY) {
-  //console.log("x", diffCenterX, "y", diffCenterY)
-  let newPoints = [];
-  for (let index = 0; index < points.length; index++) {
-    console.log("index", index)
-    let point = points[index];
-    point.x = point.x - diffCenterX;
-    point.y = point.y - diffCenterY;
-  
-    newPoints.push(point)
-    drawCircle(point, RED, 5);
-    if (index >= 1 && index < points.length) {
-      const previousPoint = newPoints[newPoints.length - 2];
-      drawLine(previousPoint, point);
-    }
-  }
-  points = newPoints;
-
-  closePolygon();
-}
 
 function getMousePosition(event) {
   const offset = canvas.getBoundingClientRect();
@@ -131,28 +20,76 @@ function getMousePosition(event) {
     y: event.clientY - offset.top
   };
 }
-
+////////////////////////////////////////////////////////
 function handleClick(event) {
   const point = getMousePosition(event);
-  if (polygonCenter && isMouseInsidePoint(point)) {
-    //console.log("handleClick return")
-    dragok = true;
-    canvas.onmousemove = movePolygon;
-    return;
-  }
-  points.push(point);
-  console.log("Detected a clik on canvas");
-  //console.log("X: ", point.x, " Y: ", point.y);
+  // If there is an "open" polygon, add the new point
+  if (newPolygon) {
+    console.log("Newpoly")
+    newPolygon.addPoint(point, ctx);
 
-  drawCircle(point, RED, 5);
-
-  if (points.length === 2) {
-    showCloseButton();
+    if (newPolygon.getAmountPoints() > 1) {
+      showCloseButton();
+    }
   }
+  else {
+    // IF the clicked point belongs to any polygons, redraw
+    for (let pol=0; pol < polygons.length; pol++) {
+      console.log("for", polygons[pol])
 
-  // If there are more than one point, it will draw a line between the last 2 added.
-  if (points.length - 1 > 0) {
-    const previousPoint = points[points.length - 2];
-    drawLine(previousPoint, point);
+      if (polygons[pol].isMouseInsidePoint(point)){
+        console.log("isMouseInsidePoint")
+
+        isDragging = true;
+        canvas.addEventListener('mousemove', movePolygon);
+        newPolygon = polygons[pol];
+        return;
+      }
+    }
+    console.log("new oneee")
+
+    // Else, create new polygon
+    newPolygon = new Polygon();
+    newPolygon.addPoint(point, ctx);
   }
+}
+
+function showCloseButton() {
+  closeButton.className = "show";
+};
+
+
+function closePolygon() {
+  newPolygon.closePolygon(ctx);
+  polygons.push(newPolygon);
+  newPolygon = null;
+}
+
+function reDrawAll() {
+  if (polygons.length > 1) {
+    for (let pol=0; pol < polygons.length; pol++) {
+      polygons[pol].reDraw(ctx);
+    }
+  }
+}
+
+function movePolygon(event) {
+  if (isDragging) {
+    const newCenterPoint = getMousePosition(event);
+    const diffCenterX = newPolygon.getCenter().x - newCenterPoint.x;
+    const diffCenterY = newPolygon.getCenter().y - newCenterPoint.y;
+    //console.log("polygonCenter",polygonCenter,"pol")
+
+    ctx.clearRect(0, 0, 1000, 1000);
+    newPolygon.reDrawPolygon(ctx, diffCenterX, diffCenterY);
+    reDrawAll();
+  }
+}
+
+function stopMovePolygon() {
+  if (isDragging) {
+    newPolygon = null;
+  }
+  isDragging = false;
+  canvas.addEventListener('mousemove', null);
 }
