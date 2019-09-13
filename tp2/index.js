@@ -10,7 +10,7 @@ let isDragging = false;
 closeButton.addEventListener('click', closePolygon);
 canvas.addEventListener('mouseup', stopMovePolygon);
 canvas.addEventListener('mousedown', handleClick);
-
+canvas.addEventListener('dblclick', removePoint);
 
 function getMousePosition(event) {
   const offset = canvas.getBoundingClientRect();
@@ -60,7 +60,7 @@ function closePolygon() {
 }
 
 function reDrawAll() {
-  if (polygons.length > 1) {
+  if (polygons.length > 0) {
     for (let pol=0; pol < polygons.length; pol++) {
       polygons[pol].reDraw(ctx);
     }
@@ -84,4 +84,16 @@ function stopMovePolygon() {
   }
   isDragging = false;
   canvas.addEventListener('mousemove', null);
+}
+
+function removePoint(event) {
+  const newClickedPoint = getMousePosition(event);
+  for (let pol=0; pol < polygons.length; pol++) {
+    if (polygons[pol].findPointInPolygon(newClickedPoint)){
+      polygons[pol].deletePoint();
+      ctx.clearRect(0, 0, 1000, 1000);
+      reDrawAll();
+      return;
+    }
+  }
 }

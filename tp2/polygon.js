@@ -10,6 +10,7 @@ class Polygon {
     this.centroID = {};
     this.draggingFromPoint = null;
     this.draggingFromCenter = false;
+    this.indexToRemove = null;
   }
 
   getAmountPoints() {
@@ -118,6 +119,17 @@ class Polygon {
     return false;
   }
 
+  findPointInPolygon(pointToCompare) {
+    for (let i=0; i<this.pointsLength; ++i) {
+      let isSamePoint = this.isMouseInsidePoint(this.points[i], pointToCompare, 5);
+      if (isSamePoint) {
+        this.indexToRemove = i;
+        return true;
+      }
+    }
+    return false;
+  }
+
   isMouseInsidePoint(actualPoint, pointToCompare, radius) {
     const distanceX = actualPoint.x - pointToCompare.x;
     const distanceY = actualPoint.y - pointToCompare.y;
@@ -182,5 +194,11 @@ class Polygon {
     this.closePolygon(ctx);
 
     this.drawCircle(ctx, this.centroID, GREEN, 3.5);
+  }
+
+  deletePoint() {
+    this.points.splice(this.indexToRemove, 1);
+    this.pointsLength--;
+    this.indexToRemove = null;
   }
 }
