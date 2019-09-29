@@ -1,0 +1,179 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+
+/*                      sprites                      */
+.spriteContainer {
+  height: 658px;
+  width: 700px;
+  padding: 50px;
+  position: relative;
+}
+
+/*                      guyOnLion                      */
+#spriteFull {
+  /* width: 228px;
+  height: 250px;full1369 */
+  width: 169px;
+  height: 186px;
+  background: url(images/fullSmall.png);
+  position: absolute;
+  top: 474px;
+}
+#spriteFull.walking {
+  animation: walking 0.5s steps(2) infinite;
+}
+@keyframes walking {
+  from { background-position: 0px;}
+  to {background-position: -338px}
+}
+#spriteFull.stopWalking {
+  background-position: -336px;
+  animation: stopWalking 0.1s;
+}
+@keyframes stopWalking {
+  100% {background-position: -336px} 
+}
+#spriteFull.reverseWalking {
+  animation: walking 0.5s steps(2) infinite;
+  animation-direction: reverse;
+}
+
+#spriteFull.jumping {
+  animation: jumping 0.5s steps(2) infinite, goingUp 1.5s linear;
+  background-position: 0px;
+}
+@keyframes goingUp {
+  0% {top:474px;}
+  50% {top: 200px;}
+  100% {top: 474px;}
+}
+@keyframes jumping {
+  100% {background-position: 0px} 
+}
+/* @keyframes dyings {
+  100% {background-position: -716px} 
+}
+#spriteFull.active {
+  background-position: -716px;
+  animation: dyings 0.1s;
+} */
+
+@keyframes wininn {
+  from { background-position: -845px;}
+  to {background-position: -1019px} 
+}
+#spriteFull.active {
+  animation: wininn 1s steps(2) infinite;
+}
+
+/*                      Background                      */
+
+.parallax {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: url(images/stage01.png);
+  background-repeat: repeat;
+  background-position: 0 0;
+  background-size: auto 100%;
+  animation: animatedBackground 100s linear infinite;
+  animation-play-state: paused;
+}
+
+.parallax.walking {
+  animation-play-state: running;
+}
+
+.parallax.stopWalking {
+  animation-play-state: paused;
+}
+
+.parallax.reverseWalking {
+  animation-play-state: running;
+  animation-direction: reverse;
+}
+
+
+
+
+@keyframes animatedBackground {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -10000px 0;
+  } 
+}
+
+/*                      Fire                      */
+
+
+#fire {
+  width: 107px;
+  height: 340px;
+  background: url(images/fire.png);
+  animation: fire2 0.5s steps(2) infinite, enemyAction 6s infinite linear;
+  position: absolute;
+  top: 175px;
+  right: 300px;
+}
+@keyframes fire2 {
+  from { background-position: 0px;}
+  to {background-position: -215px}
+}
+
+#smallFire {
+  width: 111px;
+  height: 290px;
+  background: url(images/smallFire.png);
+  animation: fire1 0.5s steps(2) infinite, enemyAction 6s infinite linear;
+  position: absolute;
+  top: 168px;
+  right: 200px;
+}
+@keyframes fire1 {
+  from { background-position: 0px;}
+  to {background-position: -224px}
+}
+@keyframes enemyAction {
+	from {right:0px;}
+    to {right: 1000px;}
+}
+
+#smallFireCoins {
+  width: 126px;
+  height: 290px;
+  background: url(images/firesCoins.png);
+  animation: fireCoins 0.5s steps(2) infinite, enemyAction 10s infinite linear;
+  position: absolute;
+  top: 179px;
+  right: 200px;
+}
+@keyframes fireCoins {
+  from { background-position: 0px;}
+  to {background-position: -237px}
+}
+
+
+#copa {
+  width: 83px;
+  height: 91px;
+  background: url(images/copa.png);
+  animation: fire3 0.5s steps(2) infinite, enemyAction2 8s infinite linear;
+  position: absolute;
+  bottom: 100px;
+  right: 200px;
+}
+@keyframes fire3 {
+  from { background-position: 0px;}
+  to {background-position: -159px}
+}
+@keyframes enemyAction2 {
+	from {right:0px;}
+    to {right: 1000px;}
+}
