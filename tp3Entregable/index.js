@@ -1,4 +1,4 @@
-'use strict';
+$( document ).ready(function() {
 
 let isRuning = false;
 let showingEnemy = false;
@@ -183,11 +183,26 @@ function lose() {
 
 }
 
-$( document ).ready(function() {
   // const audio = document.getElementById('music');
   // setTimeout(function(){
   //   console.log(audio)
   //   audio.play()
   // }, 5000)
-  gameRuning();
+  var audio;
+  
+
+  function start() {
+    
+    audio = new Audio('comp.mp3');
+        audio.addEventListener("ended", function(){
+            audio.currentTime = 0;
+       });
+        audio.play();
+    
+        gameRuning();
+}
+
+$("#start").click(function() {
+  start();
+});
 });
