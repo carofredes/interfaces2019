@@ -1,17 +1,25 @@
 'use strict';
 
-console.log("hola?")
-$('#sprite').on('click', function(){
-  $(this).toggleClass('active');
-  $('#guy').toggleClass('active');
-});
+let isRuning = false;
+let showingEnemy = false;
+let checkCollitionsInterval;
+let showEnemyInterval;
+let newFire;
+let newFire2;
+let newEnemy;
+let coinsEarned = 0;
 
+function continueWalking() {
+  $('#spriteFull').removeClass('jumping').addClass('walking');
+}
 
-$('#spriteFull').on('click', function(){
-  $(this).toggleClass('active');
-});
+function jumping(){
+  $('#spriteFull').addClass('jumping');
+  setTimeout(continueWalking, 1700);
+}
 
 function walking(){
+  isRuning = true;
   $('#spriteFull').removeClass().addClass('walking');
 
   
@@ -22,9 +30,13 @@ function walking(){
     $('.parallax').removeClass('reverseWalking')
   }
   $('.parallax').addClass('walking');
+  gameRuning();
+
 }
 
 function stopWalking(){
+  isRuning = false;
+
   $('#spriteFull').removeClass().addClass('stopWalking');
 
   if ($('.parallax').hasClass('walking')){
@@ -34,6 +46,7 @@ function stopWalking(){
     $('.parallax').removeClass('reverseWalking')
   }
   $('.parallax').addClass('stopWalking');
+  pauseGame()
 }
 
 function reverseWalking(){
@@ -51,8 +64,7 @@ document.body.onkeyup = function(e){
   console.log("e.which?,", e.which)
 
   if(e.which == 32){
-      //your code
-      $('#spriteFull').toggleClass('jumping');
+    jumping();
   }
   if(e.which == 39){
     walking();
@@ -64,3 +76,104 @@ document.body.onkeyup = function(e){
     reverseWalking();
   }
 }
+
+
+
+
+function showEnemy() {
+  console.log("newEemeny")
+  // newEnemy = new Enemy('copa');
+  // newEnemy.showEnemy();
+
+  newFire = new Enemy('smallFireCoins1')
+  newFire.showEnemy();
+  newFire2 = new Enemy('smallFireCoins2')
+  newFire2.showEnemy();
+  checkCollisions()
+}
+
+function gameRuning() {
+  console.log("runign")
+  if (isRuning) {
+    // if (newEnemy && newEnemy.isShowing()){
+    //   newEnemy.resuming();
+    // }
+
+    if (newFire && newFire.isShowing()){
+      newFire.resuming();
+      newFire2.resuming();
+      checkCollitionsInterval = setInterval(checkCollision, 100);
+
+    }
+    else {
+      showEnemy()
+    }
+
+  }
+}
+
+function pauseGame() {
+  //newEnemy.stop()
+  newFire.stop()
+  newFire2.stop()
+  $('.parallax').addClass('stopWalking');
+  clearInterval(checkCollitionsInterval);
+
+  isRuning = false;
+
+}
+
+function stopGame() {
+ // newEnemy.stop()
+ newFire.stop()
+ newFire2.stop()
+ $('.parallax').addClass('stopWalking');
+  //newEnemy = null;
+  newFire = null;
+  newFire2 = null;
+  isRuning = false;
+  clearInterval(showEnemyInterval);
+    clearInterval(checkCollitionsInterval);
+    
+}
+
+
+function checkCollisions() {
+  checkCollitionsInterval = setInterval(checkCollision, 100);
+}
+
+function checkCollision() {
+  // if (detectCollision()){
+  // }
+  console.log("check tipo",  $('#spriteFull' ).position().top)
+  //console.log("shown", showingEnemy)
+if (newEnemy) {
+  const spriteFull = $('#spriteFull' ).position();
+  if (newEnemy.checkCollision(spriteFull)) {
+    
+    lose()
+  }
+}
+if (newFire && newFire2) {
+  const spriteFull = $('#spriteFull' ).position();
+  if (newFire.checkCollision(spriteFull)) {
+    
+    lose()
+  } else {
+    if (newFire.getReward() > 0) {
+      coinsEarned += newFire.getReward();
+    }
+  }
+}
+
+  
+}
+
+function lose() {
+  stopGame()
+  $('#spriteFull').removeClass().addClass('dye');
+  $('#spriteFull').addClass('chco');
+
+}
+
+gameRuning()
