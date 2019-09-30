@@ -6,6 +6,7 @@ let checkCollitionsInterval;
 let showEnemyInterval;
 let newFire;
 let newFire2;
+let coins;
 let newEnemy;
 let coinsEarned = 0;
 
@@ -89,6 +90,8 @@ function showEnemy() {
   newFire.showEnemy();
   newFire2 = new Enemy('smallFireCoins2')
   newFire2.showEnemy();
+  coins = new Enemy('smallCoins')
+  coins.showEnemy();
   checkCollisions()
 }
 
@@ -102,6 +105,7 @@ function gameRuning() {
     if (newFire && newFire.isShowing()){
       newFire.resuming();
       newFire2.resuming();
+      coins.resuming();
       checkCollitionsInterval = setInterval(checkCollision, 100);
 
     }
@@ -116,6 +120,7 @@ function pauseGame() {
   //newEnemy.stop()
   newFire.stop()
   newFire2.stop()
+  coins.stop()
   $('.parallax').addClass('stopWalking');
   clearInterval(checkCollitionsInterval);
 
@@ -127,10 +132,12 @@ function stopGame() {
  // newEnemy.stop()
  newFire.stop()
  newFire2.stop()
+ coins.stop()
  $('.parallax').addClass('stopWalking');
   //newEnemy = null;
   newFire = null;
   newFire2 = null;
+  coins = null;
   isRuning = false;
   clearInterval(showEnemyInterval);
     clearInterval(checkCollitionsInterval);
@@ -176,4 +183,11 @@ function lose() {
 
 }
 
-gameRuning()
+$( document ).ready(function() {
+  // const audio = document.getElementById('music');
+  // setTimeout(function(){
+  //   console.log(audio)
+  //   audio.play()
+  // }, 5000)
+  gameRuning();
+});

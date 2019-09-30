@@ -272,11 +272,36 @@ body {
   animation-play-state: running;
 }
 
-#smallFireCoins1.stopEnemy,
-#smallFireCoins2.stopEnemy {
-  animation-play-state: paused;
-}
 
 #spriteFull.chco {
   top: 325px;
+}
+
+#smallCoins {
+  width: 120px;
+  height: 290px;
+  background: url(images/coins.png);
+  animation: smallCoins 0.5s steps(2) infinite, enemyAction2 4s infinite linear;
+  position: absolute;
+  top: 179px;
+  right: 200px;
+  display: none;
+  animation-play-state: paused;
+  z-index: 1;
+}
+
+@keyframes smallCoins {
+	from {right:0px;}
+    to {right: -232px;}
+}
+#smallCoins.showEnemy {
+  display: block;
+  animation-play-state: running;
+}
+
+
+#smallFireCoins1.stopEnemy,
+#smallFireCoins2.stopEnemy,
+#smallCoins.stopEnemy {
+  animation-play-state: paused;
 }
