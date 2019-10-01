@@ -12,21 +12,36 @@
 
 <body>
   <div class="coinsContainer">
-    <span>1P-<span id="coins">0000</span></span>
-    <button id="start">Start</button>
-    <button id="restart">Restart</button>
-    <span>stage-01</span>
-  </div>
-  <div class="spriteContainer ">
-    <div class="parallax">
-      <div id="coinsText">great!</div>
-      <div id="lionGuy"></div>
-      <div id="copa"></div>
-      <div id="smallFireCoins1"></div>
-      <div id="smallCoins"></div>
-      <div id="smallFireCoins2"></div>
+      <span>1P-<span id="coins">0000</span></span>
+      <button id="start">Start</button>
+      <button id="restart">Restart</button>
+      <span>stage-01</span>
     </div>
+
+  <div class="gameContainer">
+      <div class="spriteContainer ">
+          <div class="parallax">
+            <div id="coinsText">great!</div>
+            <div id="lionGuy"></div>
+            <div id="copa"></div>
+            <div id="smallFireCoins1"></div>
+            <div id="smallCoins"></div>
+            <div id="smallFireCoins2"></div>
+          </div>
+      </div>
+      <div class="instructions">
+        <span>How to play:</span>
+        <ul>
+          <li>Press start</li>
+          <li>Walk -> D</li>
+          <li>Jump -> W</li>
+          <li>Stop -> S</li>
+          <li>If you lose, press restart!</li>
+          <li>If you collect 10000 coins you win!</li>
+        </ul>
+      </div>
   </div>
+  
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="lionGuy.js"></script>
