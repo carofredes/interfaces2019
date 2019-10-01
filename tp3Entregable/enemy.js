@@ -2,11 +2,16 @@ class Enemy {
   constructor(id, reward) {
     this.showingEnemy = false;
     this.idEnemy = id;
+    this.hasRewards = false;
     this.reward = reward || 0;
   }
 
   isShowing() {
     return this.showingEnemy;
+  }
+
+  hasReward() {
+    return this.hasRewards;
   }
 
   getReward() {
@@ -15,11 +20,11 @@ class Enemy {
 
   hideEnemy() {
     this.showingEnemy = false;
+    $(`#${this.idEnemy}`).removeClass('showEnemy');
+    $(`#${this.idEnemy}`).removeClass('stopEnemy');
   }
   
   showEnemy() {
-    console.log("showEnemy")
-
     $(`#${this.idEnemy}`).addClass('showEnemy');
     this.showingEnemy = true;
   }
@@ -54,22 +59,24 @@ class Enemy {
 
   checkCollision(other) {
     const enemy = $(`#${this.idEnemy}`).position();
-
-   // console.log( "fire",enemy.top)
     if (this.showingEnemy){
-      switch (this.idEnemy) {
-        case 'copa':
-          if (this.showingEnemy && (100 <= enemy.left && enemy.left <= 230) && (other.top >= 474)){
-            return true;
-          }
-        case 'smallFireCoins1':
-          if ((100<=enemy.left && enemy.left<=180) && (340 <=other.top && other.top <=380)){
-            return true;
-          }
-        default:
-          return false;
+      if (this.idEnemy === 'copa') {
+        if ((100 <= enemy.left && enemy.left <= 230) && (other.top >= 474)){
+          return true;
+        }
+      }
+      else if (this.idEnemy === 'smallFireCoins1') {
+        if ((100 <= enemy.left && enemy.left <= 180) && (340 <= other.top && other.top <=380)){
+          return true;
+        }
+      }
+      else if (this.idEnemy === 'smallCoins') {
+        if ((100 <= enemy.left && enemy.left <= 300) && (300 <= other.top && other.top <=380)){
+          return true;
+        }
       }
     }
+    
     return false;
   }
 }

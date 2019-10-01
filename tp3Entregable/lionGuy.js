@@ -1,6 +1,6 @@
 class LionGuy {
   constructor() {
-    this.idGuy = 'spriteFull';
+    this.idGuy = 'lionGuy';
     this.jumpSound = new Audio('audio/jump.wav');
     this.dyingSound = new Audio('audio/dying.wav');
 
@@ -31,6 +31,14 @@ class LionGuy {
   dye() {
     this.dyingSound.play();
     $(`#${this.idGuy}`).removeClass().addClass('dye');
+  }
+
+  dyeUP() {
     $(`#${this.idGuy}`).addClass('chco');
+  }
+
+  win() {
+    this.stopWalk();
+    $(`#${this.idGuy}`).addClass('win');
   }
 }

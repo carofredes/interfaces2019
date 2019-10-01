@@ -31,7 +31,27 @@ body {
   border-radius: 13px;
 }
 
+#restart {
+  display: none;
+}
 
+#start,
+#restart {
+  background: black;
+  border: none;
+  color: #10d05d;
+  font-family: 'arcadeclassicregular';
+  font-size: 40px;
+  border-radius: 7px;
+  padding: 11px;
+  cursor: pointer;
+  z-index: 10;
+}
+#restart:hover,
+#start:hover {
+  cursor: pointer;
+  border: 3px solid #10d05d;
+}
 /*                      sprites                      */
 .spriteContainer {
   height: 658px;
@@ -42,7 +62,7 @@ body {
 }
 
 /*                      guyOnLion                      */
-#spriteFull {
+#lionGuy {
   width: 169px;
   height: 186px;
   background: url(images/fullSmall.png);
@@ -52,14 +72,14 @@ body {
   background-position: -336px;
   z-index: 2;
 }
-#spriteFull.walking {
+#lionGuy.walking {
   animation: walking 0.5s steps(2) infinite;
 }
 @keyframes walking {
   from { background-position: 0px; }
   to { background-position: -338px }
 }
-#spriteFull.stopWalking {
+#lionGuy.stopWalking {
   background-position: -336px;
   animation: stopWalking 0.1s;
 }
@@ -67,12 +87,12 @@ body {
   100% { background-position: -336px }
 }
 /*not yet*/
-#spriteFull.reverseWalking {
+#lionGuy.reverseWalking {
   animation: walking 0.5s steps(2) infinite;
   animation-direction: reverse;
 }
 
-#spriteFull.jumping {
+#lionGuy.jumping {
   animation: jumping 0.5s steps(2) infinite, goingUp 1.7s cubic-bezier(0.4, 0, 0.2, 1);
   background-position: 0px;
 }
@@ -85,7 +105,7 @@ body {
   100% { background-position: 0px }
 }
 
-#spriteFull.dye {
+#lionGuy.dye {
   background-position: -506px;
   animation: dying 0.1s;
 }
@@ -94,14 +114,14 @@ body {
 }
 
 @keyframes wininn {
-  from { background-position: -845px;}
-  to {background-position: -1019px} 
+  from { background-position: -676px; }
+  to { background-position: -1022px; } 
 }
-#spriteFull.active {
+#lionGuy.win {
   animation: wininn 1s steps(2) infinite;
 }
 
-#spriteFull.chco {
+#lionGuy.chco {
   top: 325px;
 }
 
@@ -213,6 +233,19 @@ body {
   animation-play-state: paused;
   z-index: 1;
 }
+
+#coinsText {
+  visibility: hidden;
+  font-size: 30px;
+  position: absolute;
+  top: 250px;
+  left: 103px;
+  color: white;
+  animation-play-state: paused;
+  font-family: 'arcadeclassicregular';
+  z-index: 10;
+}
+
 
 @keyframes smallCoins {
 	from { right:0px; }
