@@ -30,8 +30,6 @@ class Enemy {
   }
 
   stop() {
-    console.log("stop")
-
     $(`#${this.idEnemy}`).addClass('stopEnemy');
   }
 

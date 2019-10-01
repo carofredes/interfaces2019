@@ -4,6 +4,28 @@ body {
   background: #000;
 }
 
+.gameContainer {
+  display: flex;
+}
+
+.instructions {
+  flex: 1;
+  color: #FFF;
+  padding: 50px;
+  font-family: 'arcadeclassicregular';
+  font-size: 20px;
+  word-spacing: 9px;
+}
+
+ul {
+  padding: 0;
+}
+
+li {
+  list-style: none;
+  padding: 10px 0;
+}
+
 .coinsContainer {
   font-family: 'arcadeclassicregular';
   background: #000;
@@ -17,7 +39,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 20px 40px 0;
+  margin-left: 40px;
 }
 
 .coinsContainer:before {
@@ -58,7 +80,7 @@ body {
   width: 700px;
   padding: 50px;
   position: relative;
-  margin: 0 auto;
+  margin-left: 40px;
 }
 
 /*                      guyOnLion                      */

@@ -1,3 +1,27 @@
+const interval = {
+  // to keep a reference to all the intervals
+  intervals : new Set(),
+
+  // create another interval
+  make(...args) {
+    const newInterval = setInterval(...args);
+    this.intervals.add(newInterval);
+    return newInterval;
+  },
+
+  // clear a single interval
+  clear(id) {
+    this.intervals.delete(id);
+    return clearInterval(id);
+  },
+
+  // clear all intervals
+  clearAll() {
+    for (let id of this.intervals) {
+        this.clear(id);
+    }
+  }
+};
 $( document ).ready(function() {
   // Variables
   let isRuning = false;
@@ -52,7 +76,6 @@ $( document ).ready(function() {
   }
 
   function stopWalking(){
-    isRuning = false;
     domador.stopWalk();
     removeClassBackground('walking');
     addClassBackground('stopWalking');
@@ -93,6 +116,10 @@ $( document ).ready(function() {
     checkCollisionsFire();
   }
 
+  function randomIntFromInterval(min, max) { // min and max included 
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
   function gameRuning() {
     if (isRuning) {
       if (newEnemyCopa && newEnemyCopa.isShowing()){
@@ -102,7 +129,7 @@ $( document ).ready(function() {
       else {
         setTimeout(function(){
           showEnemyCopa();
-        },3000);
+        }, randomIntFromInterval(4000, 7000));
       }
 
       // It will be better if I add a function that could be reusable for this
@@ -115,7 +142,7 @@ $( document ).ready(function() {
       else {
         setTimeout(function(){
           showEnemyFire();
-        },1000);
+        }, randomIntFromInterval(3000, 6000));
       }
     }
   }
@@ -133,38 +160,39 @@ $( document ).ready(function() {
       }
       
       addClassBackground('stopWalking');
-      clearInterval(checkCollitionsInterval);
-      clearInterval(checkCollitionsIntervalFire);
       isRuning = false;
     }
   }
 
   function stopGame() {
+    interval.clearAll()
+
     pauseGame();
-    clearInterval(showEnemyInterval);
   }
 
   function checkCollisionsCopa() {
-    checkCollitionsInterval = setInterval(checkCollision, 200);
+    interval.make(checkCollision, 200);
   }
 
   function checkCollisionsFire() {
-    checkCollitionsIntervalFire = setInterval(checkCollision, 200);
+    interval.make(checkCollision, 200);
   }
 
   function checkCollision() {
     const domadorPosition = domador.getPosition();
-
-    if (newEnemyCopa && newEnemyCopa.checkCollision(domadorPosition)) {
-      lose();
-      return;
-    }
-    if (newFire && newFire.checkCollision(domadorPosition)) {
-      lose();
-      domador.dyeUP();
-    }
-    if (coins && coins.checkCollision(domadorPosition)) {
-      addCoin();
+    if (isRuning) {
+      if (newEnemyCopa && newEnemyCopa.checkCollision(domadorPosition)) {
+        lose();
+        return;
+      }
+      if (newFire && newFire.checkCollision(domadorPosition)) {
+        lose();
+        domador.dyeUP();
+      } else {
+        if (coins && coins.checkCollision(domadorPosition)) {
+          addCoin();
+        }
+      }
     }
   }
 
@@ -183,29 +211,27 @@ $( document ).ready(function() {
   }
 
   function lose() {
-    clearInterval(checkCollitionsInterval);
-    clearInterval(checkCollitionsIntervalFire);
+    document.body.removeEventListener('keyup', keyboardPressed);
     backgroundMusic.pause();
     setTimeout(function(){
       dyeSound.play();
     },300);
     stopGame();
     domador.dye();
-    document.body.removeEventListener('keyup', keyboardPressed);
-    $('#restart').show();
-    isRuning=false;
+    setTimeout(function(){
+      $('#restart').show();
+    },4000)
   }
 
   function startGame() {
     $('#start').hide();
     backgroundMusic = new Audio('comp.mp3');
-    backgroundMusic.addEventListener('ended', function(){
-      backgroundMusic.currentTime = 0;
-    });
+    backgroundMusic.loop = true;
     backgroundMusic.play();
     dyeSound = new Audio('audio/failure.mp3');
     coinSound = new Audio('audio/coin.wav');
     winSound = new Audio('audio/applause.mp3');
+    winSound.loop = true;
     domador = new LionGuy();
     gameRuning();
   }
@@ -226,20 +252,22 @@ $( document ).ready(function() {
     coinsEarned = 00000;
     $('#coins').text('0000');
     document.body.addEventListener('keyup', keyboardPressed);
+    winSound.pause();
+    backgroundMusic.currentTime = 0;
     backgroundMusic.play();
     gameRuning();
   }
 
   function checkWin(){
     if (coinsEarned >= 10000){
-      clearInterval(checkCollitionsInterval);
-      clearInterval(checkCollitionsIntervalFire);
       backgroundMusic.pause();
       winSound.play();
       stopGame();
       domador.win();
       document.body.removeEventListener('keyup', keyboardPressed);
-      $('#restart').show();
+      setTimeout(function(){
+        $('#restart').show();
+      },4000)
       isRuning=false;
     }
   }
