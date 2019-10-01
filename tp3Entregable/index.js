@@ -1,208 +1,192 @@
 $( document ).ready(function() {
+  // Variables
+  let isRuning = false;
+  let domador;
+  // intervals
+  let checkCollitionsInterval;
+  let showEnemyInterval;
+  // Enemies
+  let newFire;
+  let newFire2;
+  let coins;
+  let newEnemyCopa;
+  let coinsEarned = 0;
+  // Music
+  let backgroundMusic;
+  let dyeSound;
+  let coinSound;
 
-let isRuning = false;
-let showingEnemy = false;
-let checkCollitionsInterval;
-let showEnemyInterval;
-let newFire;
-let newFire2;
-let coins;
-let newEnemy;
-let coinsEarned = 0;
+  // Listeners
+  document.body.addEventListener('keyup', keyboardPressed);
+  $('#start').click(function() {
+    startGame();
+  });
 
-function continueWalking() {
-  $('#spriteFull').removeClass('jumping').addClass('walking');
-}
 
-function jumping(){
-  $('#spriteFull').addClass('jumping');
-  setTimeout(continueWalking, 1700);
-}
 
-function walking(){
-  isRuning = true;
-  $('#spriteFull').removeClass().addClass('walking');
-
-  
-  if ($('.parallax').hasClass('stopWalking')){
-    $('.parallax').removeClass('stopWalking')
+  function removeClassBackground(classname) {
+    console.log("removeClassBackground",classname)
+    if ($('.parallax').hasClass(classname)) {
+      $('.parallax').removeClass(classname);
+    }
   }
-  if ($('.parallax').hasClass('reverseWalking')){
-    $('.parallax').removeClass('reverseWalking')
+
+  function addClassBackground(classname) {
+    $('.parallax').addClass(classname);
   }
-  $('.parallax').addClass('walking');
-  gameRuning();
 
-}
-
-function stopWalking(){
-  isRuning = false;
-
-  $('#spriteFull').removeClass().addClass('stopWalking');
-
-  if ($('.parallax').hasClass('walking')){
-    $('.parallax').removeClass('walking')
+  function jumping() {
+    domador.jump();
   }
-  if ($('.parallax').hasClass('reverseWalking')){
-    $('.parallax').removeClass('reverseWalking')
+
+  function walking() {
+    isRuning = true;
+    domador.walk();
+    removeClassBackground('stopWalking');
+    addClassBackground('walking');
+    gameRuning();
   }
-  $('.parallax').addClass('stopWalking');
-  pauseGame()
-}
 
-function reverseWalking(){
-  $('#spriteFull').removeClass().addClass('reverseWalking');
-  if ($('.parallax').hasClass('stopWalking')){
-    $('.parallax').removeClass('stopWalking')
+  function stopWalking(){
+    isRuning = false;
+    domador.stopWalk();
+    removeClassBackground('walking');
+    addClassBackground('stopWalking');
+    pauseGame();
   }
-  if ($('.parallax').hasClass('walking')){
-    $('.parallax').removeClass('walking')
-  }
-  $('.parallax').addClass('reverseWalking');
-}
 
-document.body.onkeyup = function(e){
-  console.log("e.which?,", e.which)
-
-  if(e.which == 32){
-    jumping();
-  }
-  if(e.which == 39){
-    walking();
-  }
-  if(e.which == 40){
-    stopWalking();
-  }
-  if(e.which == 37){
-    reverseWalking();
-  }
-}
-
-
-
-
-function showEnemy() {
-  console.log("newEemeny")
-  // newEnemy = new Enemy('copa');
-  // newEnemy.showEnemy();
-
-  newFire = new Enemy('smallFireCoins1')
-  newFire.showEnemy();
-  newFire2 = new Enemy('smallFireCoins2')
-  newFire2.showEnemy();
-  coins = new Enemy('smallCoins')
-  coins.showEnemy();
-  checkCollisions()
-}
-
-function gameRuning() {
-  console.log("runign")
-  if (isRuning) {
-    // if (newEnemy && newEnemy.isShowing()){
-    //   newEnemy.resuming();
+  function keyboardPressed(event) {
+    if (event.which == 32) {
+      jumping();
+    }
+    if (event.which == 39) {
+      walking();
+    }
+    if (event.which == 40) {
+      stopWalking();
+    }
+    // if(e.which == 37){ not for now
+    //   reverseWalking();
     // }
-
-    if (newFire && newFire.isShowing()){
-      newFire.resuming();
-      newFire2.resuming();
-      coins.resuming();
-      checkCollitionsInterval = setInterval(checkCollision, 100);
-
-    }
-    else {
-      showEnemy()
-    }
-
   }
-}
 
-function pauseGame() {
-  //newEnemy.stop()
-  newFire.stop()
-  newFire2.stop()
-  coins.stop()
-  $('.parallax').addClass('stopWalking');
-  clearInterval(checkCollitionsInterval);
+  function showEnemyCopa() {
+    console.log("show copa")
 
-  isRuning = false;
+    newEnemyCopa = new Enemy('copa');
+    newEnemyCopa.showEnemy();
+    checkCollisions();
+  }
 
-}
+  function showEnemyFire() {
+    console.log("show fire")
 
-function stopGame() {
- // newEnemy.stop()
- newFire.stop()
- newFire2.stop()
- coins.stop()
- $('.parallax').addClass('stopWalking');
-  //newEnemy = null;
-  newFire = null;
-  newFire2 = null;
-  coins = null;
-  isRuning = false;
-  clearInterval(showEnemyInterval);
+    newFire = new Enemy('smallFireCoins1');
+    newFire.showEnemy();
+    newFire2 = new Enemy('smallFireCoins2');
+    newFire2.showEnemy();
+    coins = new Enemy('smallCoins');
+    coins.showEnemy();
+    checkCollisions();
+  }
+
+  function gameRuning() {
+    console.log("runing")
+    if (isRuning) {
+      if (newEnemyCopa && newEnemyCopa.isShowing()){
+        console.log("resuming copa")
+
+        newEnemyCopa.resuming();
+      }
+      else {
+        setTimeout(function(){
+          showEnemyCopa();
+        },3000000);
+      }
+
+      // It will be better if I add a function that could be reusable for this
+      if (newFire && newFire.isShowing()){
+        console.log("resuming fire")
+
+        newFire.resuming();
+        newFire2.resuming();
+        coins.resuming();
+        checkCollitionsInterval = setInterval(checkCollision, 100);
+      }
+      else {
+        setTimeout(function(){
+          showEnemyFire();
+        },100000);
+      }
+    }
+  }
+
+  function pauseGame() {
+    if (newEnemyCopa){
+      newEnemyCopa.stop();
+    }
+    if (newFire){
+      newFire.stop();
+      newFire2.stop();
+      coins.stop();
+    }
+    
+    addClassBackground('stopWalking');
     clearInterval(checkCollitionsInterval);
-    
-}
-
-
-function checkCollisions() {
-  checkCollitionsInterval = setInterval(checkCollision, 100);
-}
-
-function checkCollision() {
-  // if (detectCollision()){
-  // }
-  console.log("check tipo",  $('#spriteFull' ).position().top)
-  //console.log("shown", showingEnemy)
-if (newEnemy) {
-  const spriteFull = $('#spriteFull' ).position();
-  if (newEnemy.checkCollision(spriteFull)) {
-    
-    lose()
+    isRuning = false;
   }
-}
-if (newFire && newFire2) {
-  const spriteFull = $('#spriteFull' ).position();
-  if (newFire.checkCollision(spriteFull)) {
-    
-    lose()
-  } else {
-    if (newFire.getReward() > 0) {
-      coinsEarned += newFire.getReward();
+
+  // could add an array with the enemies and loop through them instead of repeat
+  function stopGame() {
+    pauseGame();
+
+    // cleaning enemies
+    newEnemyCopa = null;
+    newFire = null;
+    newFire2 = null;
+    coins = null;
+    clearInterval(showEnemyInterval);
+  }
+
+  function checkCollisions() {
+    checkCollitionsInterval = setInterval(checkCollision, 100);
+  }
+
+  function checkCollision() {
+    const domadorPosition = domador.getPosition();
+
+    if ((newEnemyCopa && newEnemyCopa.checkCollision(domadorPosition))
+      || (newFire && newFire.checkCollision(domadorPosition))) {
+      lose();
+    } else {
+      // only play this sound for fire enemy
+      // if (newFire) {
+      //   coinSound.play();
+      //   coinsEarned += newFire.getReward();
+      // }
     }
   }
-}
 
-  
-}
+  function lose() {
+    backgroundMusic.pause();
+    setTimeout(function(){
+      dyeSound.play();
+    },300);
+    stopGame();
+    domador.dye();
+  }
 
-function lose() {
-  stopGame()
-  $('#spriteFull').removeClass().addClass('dye');
-  $('#spriteFull').addClass('chco');
+  function startGame() {
+    $('#start').hide();
+    backgroundMusic = new Audio('comp.mp3');
+    backgroundMusic.addEventListener('ended', function(){
+      backgroundMusic.currentTime = 0;
+    });
+    //backgroundMusic.play();
+    dyeSound = new Audio('audio/failure.mp3');
+    coinSound = new Audio('audio/coin.wav');
+    domador = new LionGuy();
+    gameRuning();
+  }
 
-}
-
-  // const audio = document.getElementById('music');
-  // setTimeout(function(){
-  //   console.log(audio)
-  //   audio.play()
-  // }, 5000)
-  var audio;
-  
-
-  function start() {
-    
-    audio = new Audio('comp.mp3');
-        audio.addEventListener("ended", function(){
-            audio.currentTime = 0;
-       });
-        audio.play();
-    
-        gameRuning();
-}
-
-$("#start").click(function() {
-  start();
-});
 });
