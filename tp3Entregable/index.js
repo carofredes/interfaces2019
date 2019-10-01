@@ -1,208 +1,246 @@
 $( document ).ready(function() {
+  // Variables
+  let isRuning = false;
+  let domador;
+  // intervals
+  let checkCollitionsInterval;
+  let checkCollitionsIntervalFire;
+  let showEnemyInterval;
+  // Enemies
+  let newFire;
+  let newFire2;
+  let coins;
+  let newEnemyCopa;
+  let coinsEarned = 0000;
+  // Music
+  let backgroundMusic;
+  let dyeSound;
+  let coinSound;
+  let winSound;
 
-let isRuning = false;
-let showingEnemy = false;
-let checkCollitionsInterval;
-let showEnemyInterval;
-let newFire;
-let newFire2;
-let coins;
-let newEnemy;
-let coinsEarned = 0;
+  // Listeners
+  $('#start').click(function() {
+    document.body.addEventListener('keyup', keyboardPressed);
 
-function continueWalking() {
-  $('#spriteFull').removeClass('jumping').addClass('walking');
-}
+    startGame();
+  });
 
-function jumping(){
-  $('#spriteFull').addClass('jumping');
-  setTimeout(continueWalking, 1700);
-}
+  $('#restart').click(restartGame);
 
-function walking(){
-  isRuning = true;
-  $('#spriteFull').removeClass().addClass('walking');
 
-  
-  if ($('.parallax').hasClass('stopWalking')){
-    $('.parallax').removeClass('stopWalking')
+
+  function removeClassBackground(classname) {
+    if ($('.parallax').hasClass(classname)) {
+      $('.parallax').removeClass(classname);
+    }
   }
-  if ($('.parallax').hasClass('reverseWalking')){
-    $('.parallax').removeClass('reverseWalking')
+
+  function addClassBackground(classname) {
+    $('.parallax').addClass(classname);
   }
-  $('.parallax').addClass('walking');
-  gameRuning();
 
-}
-
-function stopWalking(){
-  isRuning = false;
-
-  $('#spriteFull').removeClass().addClass('stopWalking');
-
-  if ($('.parallax').hasClass('walking')){
-    $('.parallax').removeClass('walking')
+  function jumping() {
+    domador.jump();
   }
-  if ($('.parallax').hasClass('reverseWalking')){
-    $('.parallax').removeClass('reverseWalking')
+
+  function walking() {
+    isRuning = true;
+    domador.walk();
+    removeClassBackground('stopWalking');
+    addClassBackground('walking');
+    gameRuning();
   }
-  $('.parallax').addClass('stopWalking');
-  pauseGame()
-}
 
-function reverseWalking(){
-  $('#spriteFull').removeClass().addClass('reverseWalking');
-  if ($('.parallax').hasClass('stopWalking')){
-    $('.parallax').removeClass('stopWalking')
+  function stopWalking(){
+    isRuning = false;
+    domador.stopWalk();
+    removeClassBackground('walking');
+    addClassBackground('stopWalking');
+    pauseGame();
   }
-  if ($('.parallax').hasClass('walking')){
-    $('.parallax').removeClass('walking')
-  }
-  $('.parallax').addClass('reverseWalking');
-}
 
-document.body.onkeyup = function(e){
-  console.log("e.which?,", e.which)
-
-  if(e.which == 32){
-    jumping();
-  }
-  if(e.which == 39){
-    walking();
-  }
-  if(e.which == 40){
-    stopWalking();
-  }
-  if(e.which == 37){
-    reverseWalking();
-  }
-}
-
-
-
-
-function showEnemy() {
-  console.log("newEemeny")
-  // newEnemy = new Enemy('copa');
-  // newEnemy.showEnemy();
-
-  newFire = new Enemy('smallFireCoins1')
-  newFire.showEnemy();
-  newFire2 = new Enemy('smallFireCoins2')
-  newFire2.showEnemy();
-  coins = new Enemy('smallCoins')
-  coins.showEnemy();
-  checkCollisions()
-}
-
-function gameRuning() {
-  console.log("runign")
-  if (isRuning) {
-    // if (newEnemy && newEnemy.isShowing()){
-    //   newEnemy.resuming();
+  function keyboardPressed(event) {
+    // w
+    if (event.which == 87) {
+      jumping();
+    }
+    // d
+    if (event.which == 68) {
+      walking();
+    }
+    // s
+    if (event.which == 83) {
+      stopWalking();
+    }
+    // if(e.which == 37){ not for now
+    //   reverseWalking();
     // }
-
-    if (newFire && newFire.isShowing()){
-      newFire.resuming();
-      newFire2.resuming();
-      coins.resuming();
-      checkCollitionsInterval = setInterval(checkCollision, 100);
-
-    }
-    else {
-      showEnemy()
-    }
-
   }
-}
 
-function pauseGame() {
-  //newEnemy.stop()
-  newFire.stop()
-  newFire2.stop()
-  coins.stop()
-  $('.parallax').addClass('stopWalking');
-  clearInterval(checkCollitionsInterval);
+  function showEnemyCopa() {
+    newEnemyCopa = new Enemy('copa');
+    newEnemyCopa.showEnemy();
+    checkCollisionsCopa();
+  }
 
-  isRuning = false;
+  function showEnemyFire() {
+    newFire = new Enemy('smallFireCoins1');
+    newFire.showEnemy();
+    newFire2 = new Enemy('smallFireCoins2');
+    newFire2.showEnemy();
+    coins = new Enemy('smallCoins',500);
+    coins.showEnemy();
+    checkCollisionsFire();
+  }
 
-}
+  function gameRuning() {
+    if (isRuning) {
+      if (newEnemyCopa && newEnemyCopa.isShowing()){
 
-function stopGame() {
- // newEnemy.stop()
- newFire.stop()
- newFire2.stop()
- coins.stop()
- $('.parallax').addClass('stopWalking');
-  //newEnemy = null;
-  newFire = null;
-  newFire2 = null;
-  coins = null;
-  isRuning = false;
-  clearInterval(showEnemyInterval);
+        newEnemyCopa.resuming();
+      }
+      else {
+        setTimeout(function(){
+          showEnemyCopa();
+        },3000);
+      }
+
+      // It will be better if I add a function that could be reusable for this
+      if (newFire && newFire.isShowing()){
+
+        newFire.resuming();
+        newFire2.resuming();
+        coins.resuming();
+      }
+      else {
+        setTimeout(function(){
+          showEnemyFire();
+        },1000);
+      }
+    }
+  }
+
+  function pauseGame() {
+    if (isRuning) {
+
+      if (newEnemyCopa){
+        newEnemyCopa.stop();
+      }
+      if (newFire){
+        newFire.stop();
+        newFire2.stop();
+        coins.stop();
+      }
+      
+      addClassBackground('stopWalking');
+      clearInterval(checkCollitionsInterval);
+      clearInterval(checkCollitionsIntervalFire);
+      isRuning = false;
+    }
+  }
+
+  function stopGame() {
+    pauseGame();
+    clearInterval(showEnemyInterval);
+  }
+
+  function checkCollisionsCopa() {
+    checkCollitionsInterval = setInterval(checkCollision, 200);
+  }
+
+  function checkCollisionsFire() {
+    checkCollitionsIntervalFire = setInterval(checkCollision, 200);
+  }
+
+  function checkCollision() {
+    const domadorPosition = domador.getPosition();
+
+    if (newEnemyCopa && newEnemyCopa.checkCollision(domadorPosition)) {
+      lose();
+      return;
+    }
+    if (newFire && newFire.checkCollision(domadorPosition)) {
+      lose();
+      domador.dyeUP();
+    }
+    if (coins && coins.checkCollision(domadorPosition)) {
+      addCoin();
+    }
+  }
+
+  function addCoin(){
+    const cointsToAdd = coins.getReward();
+    coinSound.play();
+    coinsEarned = coinsEarned + cointsToAdd;
+    $('#coins').text(coinsEarned);
+    $('#smallCoins').css("visibility", "hidden");
+    $('#coinsText').css("visibility", "visible");
+    setTimeout(function(){
+      $('#smallCoins').css("visibility", "visible");
+      $('#coinsText').css("visibility", "hidden");
+    },1500);
+    checkWin();
+  }
+
+  function lose() {
     clearInterval(checkCollitionsInterval);
-    
-}
-
-
-function checkCollisions() {
-  checkCollitionsInterval = setInterval(checkCollision, 100);
-}
-
-function checkCollision() {
-  // if (detectCollision()){
-  // }
-  console.log("check tipo",  $('#spriteFull' ).position().top)
-  //console.log("shown", showingEnemy)
-if (newEnemy) {
-  const spriteFull = $('#spriteFull' ).position();
-  if (newEnemy.checkCollision(spriteFull)) {
-    
-    lose()
+    clearInterval(checkCollitionsIntervalFire);
+    backgroundMusic.pause();
+    setTimeout(function(){
+      dyeSound.play();
+    },300);
+    stopGame();
+    domador.dye();
+    document.body.removeEventListener('keyup', keyboardPressed);
+    $('#restart').show();
+    isRuning=false;
   }
-}
-if (newFire && newFire2) {
-  const spriteFull = $('#spriteFull' ).position();
-  if (newFire.checkCollision(spriteFull)) {
-    
-    lose()
-  } else {
-    if (newFire.getReward() > 0) {
-      coinsEarned += newFire.getReward();
+
+  function startGame() {
+    $('#start').hide();
+    backgroundMusic = new Audio('comp.mp3');
+    backgroundMusic.addEventListener('ended', function(){
+      backgroundMusic.currentTime = 0;
+    });
+    backgroundMusic.play();
+    dyeSound = new Audio('audio/failure.mp3');
+    coinSound = new Audio('audio/coin.wav');
+    winSound = new Audio('audio/applause.mp3');
+    domador = new LionGuy();
+    gameRuning();
+  }
+
+  // could add an array with the enemies and loop through them instead of repeat
+  function restartGame() {
+    $('#restart').hide();
+    newEnemyCopa.hideEnemy();
+    newFire.hideEnemy();
+    newFire2.hideEnemy();
+    coins.hideEnemy();
+    // cleaning enemies
+    newEnemyCopa = null;
+    newFire = null;
+    newFire2 = null;
+    coins = null;
+    domador.stopWalk();
+    coinsEarned = 00000;
+    $('#coins').text('0000');
+    document.body.addEventListener('keyup', keyboardPressed);
+    backgroundMusic.play();
+    gameRuning();
+  }
+
+  function checkWin(){
+    if (coinsEarned >= 10000){
+      clearInterval(checkCollitionsInterval);
+      clearInterval(checkCollitionsIntervalFire);
+      backgroundMusic.pause();
+      winSound.play();
+      stopGame();
+      domador.win();
+      document.body.removeEventListener('keyup', keyboardPressed);
+      $('#restart').show();
+      isRuning=false;
     }
   }
-}
-
-  
-}
-
-function lose() {
-  stopGame()
-  $('#spriteFull').removeClass().addClass('dye');
-  $('#spriteFull').addClass('chco');
-
-}
-
-  // const audio = document.getElementById('music');
-  // setTimeout(function(){
-  //   console.log(audio)
-  //   audio.play()
-  // }, 5000)
-  var audio;
-  
-
-  function start() {
-    
-    audio = new Audio('comp.mp3');
-        audio.addEventListener("ended", function(){
-            audio.currentTime = 0;
-       });
-        audio.play();
-    
-        gameRuning();
-}
-
-$("#start").click(function() {
-  start();
-});
 });
