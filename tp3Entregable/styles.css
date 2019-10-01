@@ -43,8 +43,6 @@ body {
 
 /*                      guyOnLion                      */
 #spriteFull {
-  /* width: 228px;
-  height: 250px;full1369 */
   width: 169px;
   height: 186px;
   background: url(images/fullSmall.png);
@@ -58,16 +56,17 @@ body {
   animation: walking 0.5s steps(2) infinite;
 }
 @keyframes walking {
-  from { background-position: 0px;}
-  to {background-position: -338px}
+  from { background-position: 0px; }
+  to { background-position: -338px }
 }
 #spriteFull.stopWalking {
   background-position: -336px;
   animation: stopWalking 0.1s;
 }
 @keyframes stopWalking {
-  100% {background-position: -336px} 
+  100% { background-position: -336px }
 }
+/*not yet*/
 #spriteFull.reverseWalking {
   animation: walking 0.5s steps(2) infinite;
   animation-direction: reverse;
@@ -78,19 +77,20 @@ body {
   background-position: 0px;
 }
 @keyframes goingUp {
-  0% {top:474px;}
-  50% {top: 270px;}
-  100% {top: 474px;}
+  0% { top: 474px; }
+  50% { top: 270px; }
+  100% { top: 474px; }
 }
 @keyframes jumping {
-  100% {background-position: 0px} 
+  100% { background-position: 0px }
 }
-@keyframes dyings {
-  100% {background-position: -506px} 
-}
+
 #spriteFull.dye {
   background-position: -506px;
-  animation: dyings 0.1s;
+  animation: dying 0.1s;
+}
+@keyframes dying {
+  100% { background-position: -506px }
 }
 
 @keyframes wininn {
@@ -99,6 +99,10 @@ body {
 }
 #spriteFull.active {
   animation: wininn 1s steps(2) infinite;
+}
+
+#spriteFull.chco {
+  top: 325px;
 }
 
 /*                      Background                      */
@@ -140,97 +144,33 @@ body {
 }
 
 /*                      Fire                      */
-
-
-#fire {
-  width: 107px;
-  height: 340px;
-  background: url(images/fire.png);
-  animation: fire2 0.5s steps(2) infinite, enemyAction 6s infinite linear;
-  position: absolute;
-  top: 175px;
-  right: 300px;
-}
-@keyframes fire2 {
-  from { background-position: 0px;}
-  to {background-position: -215px}
-}
-
-#smallFire {
-  width: 111px;
-  height: 290px;
-  background: url(images/smallFire.png);
-  animation: fire1 0.5s steps(2) infinite, enemyAction 6s infinite linear;
-  position: absolute;
-  top: 168px;
-  right: 200px;
-  display: none;
-}
-@keyframes fire1 {
-  from { background-position: 0px;}
-  to {background-position: -224px}
-}
-@keyframes enemyAction {
-	from {right:0px;}
-    to {right: 1000px;}
-}
-
-#smallFireCoins {
-  width: 126px;
-  height: 290px;
-  background: url(images/firesCoins.png);
-  animation: fireCoins 0.5s steps(2) infinite, enemyAction2 10s infinite linear;
-  position: absolute;
-  top: 179px;
-  right: 200px;
-  display: none;
-  animation-play-state: paused;
-
-}
-@keyframes enemyActionf {
-	from {right:-400px;}
-    to {right: 1000px;}
-}
-
-#smallFireCoins.showEnemy {
-  display: block;
-  animation-play-state: running;
-}
-@keyframes fireCoins {
-  from { background-position: 0px;}
-  to {background-position: -237px}
-}
-
-
 #copa {
   width: 83px;
   height: 91px;
   background: url(images/copa.png);
-  animation: fire3 0.5s steps(2) infinite, enemyAction2 4s infinite linear;
+  animation: copaFire 0.5s steps(2) infinite, enemyAction2 4s infinite linear;
   position: absolute;
   bottom: 100px;
   right: 200px;
   display: none;
   animation-play-state: paused;
 }
+@keyframes copaFire {
+  from { background-position: 0px; }
+  to { background-position: -159px; }
+}
+@keyframes enemyAction2 {
+	from { right: 0px; }
+  to { right: 735px; }
+}
 
 #copa.showEnemy {
   display: block;
   animation-play-state: running;
 }
-
 #copa.stopEnemy {
   animation-play-state: paused;
 }
-@keyframes fire3 {
-  from { background-position: 0px;}
-  to {background-position: -159px}
-}
-@keyframes enemyAction2 {
-	from {right:0px;}
-    to {right: 735px;}
-}
-
 
 #smallFireCoins1 {
   width: 120px;
@@ -244,16 +184,6 @@ body {
   animation-play-state: paused;
   z-index: 1;
 }
-
-@keyframes smallFireCoins1 {
-	from {right:0px;}
-    to {right: -232px;}
-}
-#smallFireCoins1.showEnemy {
-  display: block;
-  animation-play-state: running;
-}
-
 #smallFireCoins2 {
   width: 120px;
   height: 290px;
@@ -266,15 +196,9 @@ body {
   animation-play-state: paused;
   z-index: 3;
 }
-
-#smallFireCoins2.showEnemy {
-  display: block;
-  animation-play-state: running;
-}
-
-
-#spriteFull.chco {
-  top: 325px;
+@keyframes fireCoins {
+  from { background-position: 0px; }
+  to { background-position: -237px; }
 }
 
 #smallCoins {
@@ -291,14 +215,16 @@ body {
 }
 
 @keyframes smallCoins {
-	from {right:0px;}
-    to {right: -232px;}
+	from { right:0px; }
+  to { right: -232px; }
 }
-#smallCoins.showEnemy {
+
+#smallCoins.showEnemy,
+#smallFireCoins1.showEnemy,
+#smallFireCoins2.showEnemy {
   display: block;
   animation-play-state: running;
 }
-
 
 #smallFireCoins1.stopEnemy,
 #smallFireCoins2.stopEnemy,
